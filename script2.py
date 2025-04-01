@@ -79,10 +79,17 @@ if response.status_code == 200:
     st.title("🔥 Top 3 High-Protein Entrées 🍽️")
     st.markdown(f"### 📅 Menu for {formatted_date}")
 
-    # Custom CSS for cards with square images
+    # Custom CSS for centered layout and square images
     st.markdown(
         """
         <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center align all elements */
+            justify-content: center; /* Center vertically */
+        }
+
         .entree-card {
             width: 200px;  /* Fixed width for consistent sizing */
             height: 300px; /* Fixed height for cards, maintaining uniformity */
@@ -102,8 +109,8 @@ if response.status_code == 200:
         img {
             border-radius: 10px;
             width: 100%;
-            height: 100px; /* Fixed height for square-like appearance */
-            object-fit: cover; /* Ensures images fill the space without distortion */
+            height: 100px; /* Fixed height for square images */
+            object-fit: cover; /* Ensure images are cropped to maintain square shape */
         }
 
         /* Responsive styles */
@@ -113,7 +120,7 @@ if response.status_code == 200:
                 height: auto; /* Height adjusts based on content */
             }
             img {
-                height: 100px; /* Fixed height for square images */
+                height: 150px; /* Square images for mobile */
             }
             h3 {
                 font-size: 1.2rem; /* Smaller heading size on mobile */
