@@ -37,7 +37,7 @@ if response.status_code == 200:
     menu_data = response.json()
     unique_entrees = {}
 
-    # Iterate through each day's menu
+    # Iterate through each day's menu to create the food item list
     for day in menu_data.get("days", []):
         for item in day.get("menu_items", []):
             food = item.get("food")
@@ -72,8 +72,10 @@ if response.status_code == 200:
                     "emoji": get_food_emoji(name)
                 }
 
-    # Sort by protein-to-calorie ratio in descending order
-    sorted_entrees = sorted(unique_entrees.values(), key=lambda x: x["protein_calorie_ratio"], reverse=True)[:3]
+    # Sort by protein-to-calorie ratio in descending order and create rank
+    sorted_entrees = sorted(unique_entrees.values(), key=lambda x: x["protein_calorie_ratio"], reverse=True)
+    for index, entree in enumerate(sorted_entrees):
+        entree["rank"] = index + 1  # Assign rank
 
     # Streamlit UI
     st.markdown("<h1 style='text-align: center;'>🔥 Top 3 High-Protein Entrées 🍽️</h1>", unsafe_allow_html=True)
@@ -144,10 +146,10 @@ if response.status_code == 200:
 
     # Container for the cards
     st.markdown("<div class='card-container'>", unsafe_allow_html=True)
-    for rank, entree in enumerate(sorted_entrees, start=1):
+    for entree in sorted_entrees[:3]:  # Displaying only top 3 for the main section
         st.markdown(
             f"<div class='entree-card'>"
-            f"<h3>{rank} - {entree['name']} {entree['emoji']}</h3>"
+            f"<h3>{entree['rank']} - {entree['name']} {entree['emoji']}</h3>"
             f"<img src='{entree['image_url']}' alt='{entree['name']} Image'>"
             f"<p><b>💪 Protein:</b> {entree['protein']}g</p>"
             f"<p><b>🔥 Calories:</b> {entree['calories']}</p>"
@@ -156,5 +158,31 @@ if response.status_code == 200:
             unsafe_allow_html=True
         )
     st.markdown("</div>", unsafe_allow_html=True)  # Close the card container
+
+    # Search Functionality
+    search_item = st.text_input("Search for another food item:", "")
+    
+    if search_item:
+        # Search the entered item in the unique_entrees dictionary
+        search_item = search_item.lower()
+        found_entree = next((entree for entree in sorted_entrees if entree['name'].lower() == search_item), None)
+
+        if found_entree:
+            st.markdown(
+                f"<h3 style='text-align: center;'>Search Result for: {found_entree['name']}</h3>", 
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"<div class='entree-card'>"
+                f"<h3>{found_entree['rank']} - {found_entree['name']} {found_entree['emoji']}</h3>"
+                f"<img src='{found_entree['image_url']}' alt='{found_entree['name']}'>"
+                f"<p><b>💪 Protein:</b> {found_entree['protein']}g</p>"
+                f"<p><b>🔥 Calories:</b> {found_entree['calories']}</p>"
+                f"<p><b>⚖️ Protein-to-Calorie Ratio:</b> {found_entree['protein_calorie_ratio']:.4f}</p>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+        else:
+            st.error("😞 Sorry, no information found for that food item.")
 else:
-    st.error("❌ Error fetching data from the API.")
+    st.info("Please enter a food item to see its protein-to-calorie ratio and rank.")
