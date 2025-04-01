@@ -76,8 +76,8 @@ if response.status_code == 200:
     sorted_entrees = sorted(unique_entrees.values(), key=lambda x: x["protein_calorie_ratio"], reverse=True)[:3]
 
     # Streamlit UI
-    st.title("🔥 Top 3 High-Protein Entrées 🍽️")
-    st.markdown(f"### 📅 Menu for {formatted_date}")
+    st.markdown("<h1 style='text-align: center;'>🔥 Top 3 High-Protein Entrées 🍽️</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='text-align: center;'>📅 Menu for {formatted_date}</h3>", unsafe_allow_html=True)
 
     # Custom CSS for centered layout and square images
     st.markdown(
@@ -87,7 +87,15 @@ if response.status_code == 200:
             display: flex;
             flex-direction: column;
             align-items: center; /* Center align all elements */
-            justify-content: center; /* Center vertically */
+        }
+
+        .card-container {
+            display: flex;
+            justify-content: center; /* Center the card layout */
+            flex-wrap: wrap; /* Allow wrapping of cards */
+            max-width: 800px; /* Set a maximum width for better appearance */
+            margin: 0 auto; /* Center the container */
+            padding: 20px; /* Add some padding to the container */
         }
 
         .entree-card {
@@ -134,17 +142,19 @@ if response.status_code == 200:
         unsafe_allow_html=True
     )
 
+    # Container for the cards
+    st.markdown("<div class='card-container'>", unsafe_allow_html=True)
     for rank, entree in enumerate(sorted_entrees, start=1):
-        with st.container():
-            st.markdown(
-                f"<div class='entree-card'>"
-                f"<h3>{rank} - {entree['name']} {entree['emoji']}</h3>"
-                f"<img src='{entree['image_url']}' alt='{entree['name']} Image'>"
-                f"<p><b>💪 Protein:</b> {entree['protein']}g</p>"
-                f"<p><b>🔥 Calories:</b> {entree['calories']}</p>"
-                f"<p><b>⚖️ Protein-to-Calorie Ratio:</b> {entree['protein_calorie_ratio']:.4f}</p>"
-                f"</div>",
-                unsafe_allow_html=True
-            )
+        st.markdown(
+            f"<div class='entree-card'>"
+            f"<h3>{rank} - {entree['name']} {entree['emoji']}</h3>"
+            f"<img src='{entree['image_url']}' alt='{entree['name']} Image'>"
+            f"<p><b>💪 Protein:</b> {entree['protein']}g</p>"
+            f"<p><b>🔥 Calories:</b> {entree['calories']}</p>"
+            f"<p><b>⚖️ Protein-to-Calorie Ratio:</b> {entree['protein_calorie_ratio']:.4f}</p>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+    st.markdown("</div>", unsafe_allow_html=True)  # Close the card container
 else:
     st.error("❌ Error fetching data from the API.")
