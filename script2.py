@@ -70,6 +70,13 @@ if response.status_code == 200:
                     "image_url": image_url,
                     "emoji": get_food_emoji(name)
                 }
+                archived_entrees.append({
+                    "name": name,
+                    "calories": calories,
+                    "protein": protein,
+                    "image_url": image_url,
+                    "emoji": get_food_emoji(name)
+                })
             elif image_url:  # If only an image exists, archive the item
                 archived_entrees.append({
                     "name": name,
@@ -86,10 +93,10 @@ if response.status_code == 200:
 
     # Streamlit Sidebar Menu
     st.sidebar.title("Menu")
-    menu_option = st.sidebar.selectbox("Navigate", options=["Home", "Top 3 Rankings", "Archive", "Search"])
+    menu_option = st.sidebar.selectbox("Navigate", options=["Top 3 Rankings", "Archive", "Search"])
 
     # Dynamic content based on the selected menu option
-    if menu_option == "Home":
+    if menu_option == "Top 3 Rankings":
         st.markdown("<h1 style='text-align: center; color: white;'>🔥 Top 3 High-Protein Entrées 🍽️</h1>", unsafe_allow_html=True)
         st.markdown(f"<h3 style='text-align: center; color: white;'>📅 Menu for {formatted_date}</h3>", unsafe_allow_html=True)
 
@@ -179,40 +186,20 @@ if response.status_code == 200:
             )
         st.markdown("</div>", unsafe_allow_html=True)  # Close the card container
 
-    elif menu_option == "Top 3 Rankings":
-        st.markdown("<h1 style='text-align: center; color: white;'>🔥 Top 3 High-Protein Entrées 🍽️</h1>", unsafe_allow_html=True)
-        # Container for the top entrees
+    elif menu_option == "Archive":
+        st.markdown("<h3 style='text-align: center; color: white;'>📦 All Available Items</h3>", unsafe_allow_html=True)
         st.markdown("<div class='card-container'>", unsafe_allow_html=True)
-        for entree in sorted_entrees[:3]:  # Displaying only top 3 for the main section
+        for archived in archived_entrees:
             st.markdown(
                 f"<div class='entree-card'>"
-                f"<h3>{entree['rank']} - {entree['name']} {entree['emoji']}</h3>"
-                f"<img src='{entree['image_url']}' alt='{entree['name']} Image'>"
-                f"<p><b>💪 Protein:</b> {entree['protein']}g</p>"
-                f"<p><b>🔥 Calories:</b> {entree['calories']}</p>"
-                f"<p><b>⚖️ Protein-to-Calorie Ratio:</b> {entree['protein_calorie_ratio']:.4f}</p>"
+                f"<h3>{archived['name']} {archived['emoji']}</h3>"
+                f"<img src='{archived['image_url']}' alt='{archived['name']}'>"
+                f"<p><b>💪 Protein:</b> {archived['protein'] if archived['protein'] is not None else 'N/A'}g</p>"
+                f"<p><b>🔥 Calories:</b> {archived['calories'] if archived['calories'] is not None else 'N/A'}</p>"
                 f"</div>",
                 unsafe_allow_html=True
             )
-        st.markdown("</div>", unsafe_allow_html=True)  # Close the card container
-
-    elif menu_option == "Archive":
-        if archived_entrees:
-            st.markdown("<h3 style='text-align: center; color: white;'>📦 Other Available Items</h3>", unsafe_allow_html=True)
-            st.markdown("<div class='card-container'>", unsafe_allow_html=True)
-            for archived in archived_entrees:
-                st.markdown(
-                    f"<div class='entree-card'>"
-                    f"<h3>{archived['name']} {archived['emoji']}</h3>"
-                    f"<img src='{archived['image_url']}' alt='{archived['name']}'>"
-                    f"<p><b>💪 Protein:</b> {archived['protein'] if archived['protein'] is not None else 'N/A'}g</p>"
-                    f"<p><b>🔥 Calories:</b> {archived['calories'] if archived['calories'] is not None else 'N/A'}</p>"
-                    f"</div>",
-                    unsafe_allow_html=True
-                )
-            st.markdown("</div>", unsafe_allow_html=True)  # Close the archive container
-        else:
-            st.markdown("<h3 style='text-align: center; color: white;'>📦 No Archived Items Available</h3>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)  # Close the archive container
 
     elif menu_option == "Search":
         search_item = st.text_input("Search for another food item (e.g., 'nugget'):", "").strip()
@@ -233,9 +220,4 @@ if response.status_code == 200:
                         f"<p><b>🔥 Calories:</b> {found_entree['calories']}</p>"
                         f"<p><b>⚖️ Protein-to-Calorie Ratio:</b> {found_entree['protein_calorie_ratio']:.4f}</p>"
                         f"</div>",
-                        unsafe_allow_html=True
-                    )
-            else:
-                st.error("😞 Sorry, no information found for that food item.")
-else:
-    st.error("❌ Error fetching data from the API.")
+                       
