@@ -25,7 +25,9 @@ def get_food_emoji(food_name):
         "burger": "🍔",
         "pizza": "🍕",
         "sandwich": "🥪",
-        "salad": "🥗"
+        "salad": "🥗",
+        "nugget": "🍗",
+        "panini": "🥪"
     }
     for key in emoji_dict.keys():
         if key in food_name:
@@ -160,28 +162,29 @@ if response.status_code == 200:
     st.markdown("</div>", unsafe_allow_html=True)  # Close the card container
 
     # Search Functionality
-    search_item = st.text_input("Search for another food item:", "")
+    search_item = st.text_input("Search for another food item (e.g., 'nugget'):", "").strip()
     
     if search_item:
-        # Search the entered item in the unique_entrees dictionary
-        search_item = search_item.lower()
-        found_entree = next((entree for entree in sorted_entrees if entree['name'].lower() == search_item), None)
+        # Search for entered term across the unique_entrees
+        found_entrees = [entree for entree in sorted_entrees if search_item.lower() in entree['name'].lower()]
 
-        if found_entree:
+        if found_entrees:
             st.markdown(
-                f"<h3 style='text-align: center;'>Search Result for: {found_entree['name']}</h3>", 
+                f"<h3 style='text-align: center;'>Search Results for: '{search_item}'</h3>", 
                 unsafe_allow_html=True
             )
-            st.markdown(
-                f"<div class='entree-card'>"
-                f"<h3>{found_entree['rank']} - {found_entree['name']} {found_entree['emoji']}</h3>"
-                f"<img src='{found_entree['image_url']}' alt='{found_entree['name']}'>"
-                f"<p><b>💪 Protein:</b> {found_entree['protein']}g</p>"
-                f"<p><b>🔥 Calories:</b> {found_entree['calories']}</p>"
-                f"<p><b>⚖️ Protein-to-Calorie Ratio:</b> {found_entree['protein_calorie_ratio']:.4f}</p>"
-                f"</div>",
-                unsafe_allow_html=True
-            )
+            # Display all found items
+            for found_entree in found_entrees:
+                st.markdown(
+                    f"<div class='entree-card'>"
+                    f"<h3>{found_entree['rank']} - {found_entree['name']} {found_entree['emoji']}</h3>"
+                    f"<img src='{found_entree['image_url']}' alt='{found_entree['name']}'>"
+                    f"<p><b>💪 Protein:</b> {found_entree['protein']}g</p>"
+                    f"<p><b>🔥 Calories:</b> {found_entree['calories']}</p>"
+                    f"<p><b>⚖️ Protein-to-Calorie Ratio:</b> {found_entree['protein_calorie_ratio']:.4f}</p>"
+                    f"</div>",
+                    unsafe_allow_html=True
+                )
         else:
             st.error("😞 Sorry, no information found for that food item.")
 else:
