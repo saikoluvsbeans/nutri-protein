@@ -55,24 +55,27 @@ if response.status_code == 200:
                 continue
 
             nutrients = food.get("rounded_nutrition_info", {})
-            calories = nutrients.get("calories", 0)
-            protein = nutrients.get("g_protein", 0)
-            image_url = food.get("image_url")
+            calories = nutrients.get("calories")
+            protein = nutrients.get("g_protein")
 
-            # Ensure a valid image URL
-            if not image_url or not image_url.strip():
-                image_url = "https://via.placeholder.com/150"  # Placeholder image
+            # Only include food items with valid protein and calorie values
+            if (calories is not None and calories > 0) and (protein is not None and protein > 0):
+                image_url = food.get("image_url")
 
-            # Only add unique entrees from the API
-            if name not in unique_entrees:
-                unique_entrees[name] = {
-                    "name": name,
-                    "calories": calories,
-                    "protein": protein,
-                    "protein_calorie_ratio": protein / calories if calories > 0 else 0,
-                    "image_url": image_url,
-                    "emoji": get_food_emoji(name)
-                }
+                # Ensure a valid image URL
+                if not image_url or not image_url.strip():
+                    image_url = "https://via.placeholder.com/150"  # Placeholder image
+
+                # Only add unique entrees from the API
+                if name not in unique_entrees:
+                    unique_entrees[name] = {
+                        "name": name,
+                        "calories": calories,
+                        "protein": protein,
+                        "protein_calorie_ratio": protein / calories,
+                        "image_url": image_url,
+                        "emoji": get_food_emoji(name)
+                    }
 
     # Sort by protein-to-calorie ratio in descending order and create rank
     sorted_entrees = sorted(unique_entrees.values(), key=lambda x: x["protein_calorie_ratio"], reverse=True)
