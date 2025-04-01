@@ -220,4 +220,9 @@ if response.status_code == 200:
                         f"<p><b>🔥 Calories:</b> {found_entree['calories']}</p>"
                         f"<p><b>⚖️ Protein-to-Calorie Ratio:</b> {found_entree['protein_calorie_ratio']:.4f}</p>"
                         f"</div>",
-                       
+                        unsafe_allow_html=True
+                    )
+            else:
+                st.error("😞 Sorry, no information found for that food item.")
+else:
+    st.error("❌ Error fetching data from the API.")
