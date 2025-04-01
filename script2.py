@@ -80,14 +80,16 @@ if response.status_code == 200:
         entree["rank"] = index + 1  # Assign rank
 
     # Streamlit UI
-    st.markdown("<h1 style='text-align: center;'>🔥 Top 3 High-Protein Entrées 🍽️</h1>", unsafe_allow_html=True)
-    st.markdown(f"<h3 style='text-align: center;'>📅 Menu for {formatted_date}</h3>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: white;'>🔥 Top 3 High-Protein Entrées 🍽️</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='text-align: center; color: white;'>📅 Menu for {formatted_date}</h3>", unsafe_allow_html=True)
 
-    # Custom CSS for centered layout and square images
+    # Custom CSS for dark mode and centered layout
     st.markdown(
         """
         <style>
         body {
+            background-color: #121212; /* Dark background */
+            color: #ffffff; /* Light text for readability */
             display: flex;
             flex-direction: column;
             align-items: center; /* Center align all elements */
@@ -98,7 +100,7 @@ if response.status_code == 200:
             justify-content: center; /* Center the card layout */
             flex-wrap: wrap; /* Allow wrapping of cards */
             max-width: 800px; /* Set a maximum width for better appearance */
-            margin: 0 auto; /* Center the container */
+            margin: 20px auto; /* Center the container and add margin */
             padding: 20px; /* Add some padding to the container */
         }
 
@@ -108,14 +110,20 @@ if response.status_code == 200:
             border-radius: 15px;
             padding: 10px;
             margin: 10px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            color: #333;
+            background-color: #1f1f1f; /* Darker card background */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            color: #ffffff; /* Light text color */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center; /* Center content vertically */
             text-align: center;       /* Center the text */
+            transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition */
+        }
+
+        .entree-card:hover {
+            transform: scale(1.05); /* Scale effect on hover */
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7); /* Enhanced shadow on hover */
         }
 
         img {
@@ -170,7 +178,7 @@ if response.status_code == 200:
 
         if found_entrees:
             st.markdown(
-                f"<h3 style='text-align: center;'>Search Results for: '{search_item}'</h3>", 
+                f"<h3 style='text-align: center; color: white;'>Search Results for: '{search_item}'</h3>", 
                 unsafe_allow_html=True
             )
             # Display all found items
