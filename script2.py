@@ -79,48 +79,47 @@ if response.status_code == 200:
     st.title("🔥 Top 3 High-Protein Entrées 🍽️")
     st.markdown(f"### 📅 Menu for {formatted_date}")
 
-    # Custom CSS for animations with vertical rectangle cards
+    # Custom CSS for cards with square images
     st.markdown(
         """
         <style>
         .entree-card {
-            width: 200px;  /* Set a fixed width for consistent sizing */
-            height: 275px; /* Set a fixed height to create a rectangular shape */
+            width: 200px;  /* Fixed width for consistent sizing */
+            height: 300px; /* Fixed height for cards, maintaining uniformity */
             border-radius: 15px;
             padding: 10px;
             margin: 10px;
             background-color: #ffffff;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             color: #333;
-            transition: transform 0.2s, box-shadow 0.2s;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between; /* Space between items for better layout */
-            text-align: center; /* Center-align the text */
+            justify-content: center; /* Center content vertically */
+            text-align: center;       /* Center the text */
         }
-        .entree-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-        }
+
         img {
             border-radius: 10px;
-            width: 100%;   /* Set image to full width of the card */
-            height: 140px; /* Fixed height for images to maintain square-like uniformity */
+            width: 100%;
+            height: 100px; /* Fixed height for square-like appearance */
             object-fit: cover; /* Ensures images fill the space without distortion */
         }
+
         /* Responsive styles */
         @media (max-width: 600px) {
             .entree-card {
-                margin: 5px;
-                width: 100%; /* Allow cards to be full width on small devices */
-                height: auto; /* Let height adjust based on content */
+                width: 80%; /* Adjust width on mobile for better spacing */
+                height: auto; /* Height adjusts based on content */
+            }
+            img {
+                height: 100px; /* Fixed height for square images */
             }
             h3 {
-                font-size: 1.5rem;
+                font-size: 1.2rem; /* Smaller heading size on mobile */
             }
             p {
-                font-size: 0.9rem;
+                font-size: 0.8rem; /* Smaller paragraph size on mobile */
             }
         }
         </style>
