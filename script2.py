@@ -58,6 +58,7 @@ if response.status_code == 200:
             nutrients = food.get("rounded_nutrition_info", {})
             calories = nutrients.get("calories")
             protein = nutrients.get("g_protein")
+            sodium = nutrients.get("mg_sodium")  # Added sodium field
             image_url = food.get("image_url")
 
             # Ensure valid image URL and nutritional values
@@ -66,6 +67,7 @@ if response.status_code == 200:
                     "name": name,
                     "calories": calories,
                     "protein": protein,
+                    "sodium": sodium,
                     "protein_calorie_ratio": protein / calories,
                     "image_url": image_url,
                     "emoji": get_food_emoji(name)
@@ -74,6 +76,7 @@ if response.status_code == 200:
                     "name": name,
                     "calories": calories,
                     "protein": protein,
+                    "sodium": sodium,
                     "image_url": image_url,
                     "emoji": get_food_emoji(name)
                 })
@@ -82,6 +85,7 @@ if response.status_code == 200:
                     "name": name,
                     "calories": calories,
                     "protein": protein,
+                    "sodium": sodium,
                     "image_url": image_url,
                     "emoji": get_food_emoji(name)
                 })
@@ -100,7 +104,7 @@ if response.status_code == 200:
         st.markdown("<h1 style='text-align: center; color: white;'>🔥 Top 3 High-Protein Entrées 🍽️</h1>", unsafe_allow_html=True)
         st.markdown(f"<h3 style='text-align: center; color: white;'>📅 Menu for {formatted_date}</h3>", unsafe_allow_html=True)
 
-        # Custom CSS for dark mode and centered layout
+        # Custom CSS for dark mode and mobile-responsive layout
         st.markdown(
             """
             <style>
@@ -122,8 +126,9 @@ if response.status_code == 200:
             }
 
             .entree-card {
-                width: 200px;  /* Fixed width for consistent sizing */
-                height: 300px; /* Fixed height for cards, maintaining uniformity */
+                width: 90%;  /* Full width for small devices */
+                max-width: 200px; /* Max width for larger devices */
+                height: fit-content; /* Adjust height based on content */
                 border-radius: 15px;
                 padding: 10px;
                 margin: 10px;
@@ -153,18 +158,22 @@ if response.status_code == 200:
             /* Responsive styles */
             @media (max-width: 600px) {
                 .entree-card {
-                    width: 80%; /* Adjust width on mobile for better spacing */
-                    height: auto; /* Height adjusts based on content */
+                    width: 100%; /* Full width on mobile */
                 }
-                img {
-                    height: 150px; /* Square images for mobile */
-                }
-                h3 {
-                    font-size: 1.2rem; /* Smaller heading size on mobile */
-                }
-                p {
-                    font-size: 0.8rem; /* Smaller paragraph size on mobile */
-                }
+            }
+
+            .archive-header {
+                margin-top: 30px;
+                font-size: 1.4rem;
+                text-align: center;
+                color: #ffffff; /* White color for clear visibility */
+            }
+
+            .archive-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr); /* Two-column grid */
+                gap: 10px; /* Space between grid items */
+                margin: 20px; /* Space around grid */
             }
             </style>
             """,
@@ -180,6 +189,7 @@ if response.status_code == 200:
                 f"<img src='{entree['image_url']}' alt='{entree['name']} Image'>"
                 f"<p><b>💪 Protein:</b> {entree['protein']}g</p>"
                 f"<p><b>🔥 Calories:</b> {entree['calories']}</p>"
+                f"<p><b>🧂 Sodium:</b> {entree['sodium'] if entree['sodium'] is not None else 'N/A'} mg</p>"
                 f"<p><b>⚖️ Protein-to-Calorie Ratio:</b> {entree['protein_calorie_ratio']:.4f}</p>"
                 f"</div>",
                 unsafe_allow_html=True
@@ -188,7 +198,7 @@ if response.status_code == 200:
 
     elif menu_option == "Archive":
         st.markdown("<h3 style='text-align: center; color: white;'>📦 All Available Items</h3>", unsafe_allow_html=True)
-        st.markdown("<div class='card-container'>", unsafe_allow_html=True)
+        st.markdown("<div class='archive-container'>", unsafe_allow_html=True)  # Use grid container
         for archived in archived_entrees:
             st.markdown(
                 f"<div class='entree-card'>"
@@ -196,6 +206,7 @@ if response.status_code == 200:
                 f"<img src='{archived['image_url']}' alt='{archived['name']}'>"
                 f"<p><b>💪 Protein:</b> {archived['protein'] if archived['protein'] is not None else 'N/A'}g</p>"
                 f"<p><b>🔥 Calories:</b> {archived['calories'] if archived['calories'] is not None else 'N/A'}</p>"
+                f"<p><b>🧂 Sodium:</b> {archived['sodium'] if archived['sodium'] is not None else 'N/A'} mg</p>"
                 f"</div>",
                 unsafe_allow_html=True
             )
@@ -218,6 +229,7 @@ if response.status_code == 200:
                         f"<img src='{found_entree['image_url']}' alt='{found_entree['name']}'>"
                         f"<p><b>💪 Protein:</b> {found_entree['protein']}g</p>"
                         f"<p><b>🔥 Calories:</b> {found_entree['calories']}</p>"
+                        f"<p><b>🧂 Sodium:</b> {found_entree['sodium'] if found_entree['sodium'] is not None else 'N/A'} mg</p>"
                         f"<p><b>⚖️ Protein-to-Calorie Ratio:</b> {found_entree['protein_calorie_ratio']:.4f}</p>"
                         f"</div>",
                         unsafe_allow_html=True
