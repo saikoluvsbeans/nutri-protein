@@ -38,6 +38,7 @@ def get_food_emoji(food_name):
 if response.status_code == 200:
     menu_data = response.json()
     unique_entrees = {}
+    archived_entrees = []
 
     # Iterate through each day's menu to create the food item list
     for day in menu_data.get("days", []):
@@ -57,27 +58,28 @@ if response.status_code == 200:
             nutrients = food.get("rounded_nutrition_info", {})
             calories = nutrients.get("calories")
             protein = nutrients.get("g_protein")
+            image_url = food.get("image_url")
 
-            # Only include food items with valid protein and calorie values
-            if (calories is not None and calories > 0) and (protein is not None and protein > 0):
-                image_url = food.get("image_url")
+            # Ensure a valid image URL and check for valid protein and calorie values
+            if image_url and (calories is not None and calories > 0) and (protein is not None and protein > 0):
+                unique_entrees[name] = {
+                    "name": name,
+                    "calories": calories,
+                    "protein": protein,
+                    "protein_calorie_ratio": protein / calories,
+                    "image_url": image_url,
+                    "emoji": get_food_emoji(name)
+                }
+            elif image_url:  # If there is an image but not necessarily valid nutritional values
+                archived_entrees.append({
+                    "name": name,
+                    "calories": calories,
+                    "protein": protein,
+                    "image_url": image_url,
+                    "emoji": get_food_emoji(name)
+                })
 
-                # Ensure a valid image URL
-                if not image_url or not image_url.strip():
-                    image_url = "https://via.placeholder.com/150"  # Placeholder image
-
-                # Only add unique entrees from the API
-                if name not in unique_entrees:
-                    unique_entrees[name] = {
-                        "name": name,
-                        "calories": calories,
-                        "protein": protein,
-                        "protein_calorie_ratio": protein / calories,
-                        "image_url": image_url,
-                        "emoji": get_food_emoji(name)
-                    }
-
-    # Sort by protein-to-calorie ratio in descending order and create rank
+    # Sort unique entrees by protein-to-calorie ratio and create rank
     sorted_entrees = sorted(unique_entrees.values(), key=lambda x: x["protein_calorie_ratio"], reverse=True)
     for index, entree in enumerate(sorted_entrees):
         entree["rank"] = index + 1  # Assign rank
@@ -152,12 +154,19 @@ if response.status_code == 200:
                 font-size: 0.8rem; /* Smaller paragraph size on mobile */
             }
         }
+
+        .archive-header {
+            margin-top: 30px;
+            font-size: 1.4rem;
+            text-align: center;
+            color: #ffffff; /* White color for clear visibility */
+        }
         </style>
         """,
         unsafe_allow_html=True
     )
 
-    # Container for the cards
+    # Container for the top entrees
     st.markdown("<div class='card-container'>", unsafe_allow_html=True)
     for entree in sorted_entrees[:3]:  # Displaying only top 3 for the main section
         st.markdown(
@@ -198,5 +207,21 @@ if response.status_code == 200:
                 )
         else:
             st.error("😞 Sorry, no information found for that food item.")
+    
+    # Archive Section for Other Available Items
+    if archived_entrees:
+        st.markdown("<h3 class='archive-header'>📦 Other Available Items</h3>", unsafe_allow_html=True)
+        st.markdown("<div class='card-container'>", unsafe_allow_html=True)
+        for archived in archived_entrees:
+            st.markdown(
+                f"<div class='entree-card'>"
+                f"<h3>{archived['name']} {archived['emoji']}</h3>"
+                f"<img src='{archived['image_url']}' alt='{archived['name']}'>"
+                f"<p><b>💪 Protein:</b> {archived['protein'] if archived['protein'] is not None else 'N/A'}g</p>"
+                f"<p><b>🔥 Calories:</b> {archived['calories'] if archived['calories'] is not None else 'N/A'}</p>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+        st.markdown("</div>", unsafe_allow_html=True)  # Close the archive container
 else:
-    st.info("Please enter a food item to see its protein-to-calorie ratio and rank.")
+    st.error("❌ Error fetching data from the API.")
