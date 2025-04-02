@@ -3,28 +3,30 @@ import streamlit as st
 from datetime import datetime, timedelta
 import pytz  # Make sure to install pytz
 
-# Pexels API configuration
-PEXELS_ACCESS_KEY = 'gQWgiqpvDn7mjmD52peSvt4Ba7l4dq451uKld0v3NTAQcTrc7yxu3SkD'
-DEFAULT_IMAGE = "https://via.placeholder.com/150"  # Fallback placeholder image
+# Emoji mapping for food items
+FOOD_EMOJIS = {
+    "chicken enchilada": "🌮",  # Emoji for chicken enchiladas
+    "pepperoni pizza": "🍕",    # Emoji for pepperoni pizza
+    "meat lover's pizza": "🍕",  # Emoji for meat lovers pizza
+    "vegetarian pizza": "🍕",    # Emoji for vegetarian pizza
+    "salad": "🥗",               # Emoji for salad
+    "hamburger": "🍔",           # Emoji for hamburger
+    "hot dog": "🌭",             # Emoji for hot dog
+    "taco": "🌮",                # Emoji for taco
+    "spaghetti": "🍝",           # Emoji for spaghetti
+    "fish": "🐟",                # Emoji for fish
+    "chicken": "🍗",             # Emoji for chicken
+    "default": "🍽️"             # Default food emoji
+}
 
-# Function to fetch a stock image from Pexels
-def fetch_stock_image(query):
-    search_url = f'https://api.pexels.com/v1/search?query={query}&per_page=1'
-    headers = {
-        'Authorization': PEXELS_ACCESS_KEY
-    }
-    try:
-        response = requests.get(search_url, headers=headers)
-        if response.status_code == 200:
-            data = response.json()
-            if data['photos']:
-                return data['photos'][0]['src']['regular']  # Get the regular size image URL
-            else:
-                st.warning(f"No images found for query: {query}. Using default image.")
-                return DEFAULT_IMAGE
-    except Exception as e:
-        print(f"Error fetching image from Pexels: {e}")
-    return DEFAULT_IMAGE  # Return default image if an error occurs
+# Function to get the emoji based on food name
+def get_food_emoji(name):
+    # Normalize food name to lower case
+    normalized_name = name.lower()
+    for food in FOOD_EMOJIS.keys():
+        if food in normalized_name:
+            return FOOD_EMOJIS[food]
+    return FOOD_EMOJIS['default']  # Return default if no match found
 
 # Get the current date and time in Austin, Texas
 austin_tz = pytz.timezone('America/Chicago')  # Austin is in Central Time Zone
@@ -68,11 +70,9 @@ if response.status_code == 200:
             sodium = nutrients.get("mg_sodium")  # Added sodium field
             image_url = food.get("image_url")  # Get the image URL
 
-            # If no image is found, get a stock image
+            # Use an emoji if no image is found
             if not image_url:
-                # Use a descriptive query for fetching images
-                image_query = name + " stock photo"  # Modify query for better chances
-                image_url = fetch_stock_image(image_query)  # Fetch stock image based on food name
+                image_url = get_food_emoji(name)  # Get emoji for the food item
 
             # Ensure valid nutritional values before adding to unique_entrees
             if calories is not None and calories > 0 and protein is not None and protein > 0:
@@ -82,7 +82,7 @@ if response.status_code == 200:
                     "protein": protein,
                     "sodium": sodium,
                     "protein_calorie_ratio": protein / calories,
-                    "image_url": image_url  # Assign (valid or fetched) image URL
+                    "image_url": image_url  # Assign (valid or emoji) image URL
                 }
 
     # Sort unique entrees by protein-to-calorie ratio and create rank
@@ -164,7 +164,7 @@ if response.status_code == 200:
                 st.markdown(
                     f"<div class='entree-card'>"
                     f"<h3>{entree['rank']} - {entree['name']}</h3>"
-                    f"<img src='{entree['image_url']}' alt='{entree['name']} Image'>"
+                    f"<p style='font-size: 50px;'>{entree['image_url']}</p>"  # Display emoji
                     f"<p><b>💪 Protein:</b> {entree['protein']}g</p>"
                     f"<p><b>🔥 Calories:</b> {entree['calories']}</p>"
                     f"<p><b>🧂 Sodium:</b> {entree['sodium'] if entree['sodium'] is not None else 'N/A'} mg</p>"
