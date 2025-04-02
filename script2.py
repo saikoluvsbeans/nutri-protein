@@ -3,13 +3,14 @@ import streamlit as st
 from datetime import datetime, timedelta
 import pytz  # Make sure to install pytz
 
-# Emoji mapping for food items
+# Emoji mapping for food items with specific keyword handling
 FOOD_EMOJIS = {
     "chicken enchilada": "🌮",  # Emoji for chicken enchiladas
     "pepperoni pizza": "🍕",    # Emoji for pepperoni pizza
     "meat lover's pizza": "🍕",  # Emoji for meat lovers pizza
     "vegetarian pizza": "🍕",    # Emoji for vegetarian pizza
     "salad": "🥗",               # Emoji for salad
+    "cheeseburger": "🍔",        # Emoji for cheeseburger
     "hamburger": "🍔",           # Emoji for hamburger
     "hot dog": "🌭",             # Emoji for hot dog
     "taco": "🌮",                # Emoji for taco
@@ -124,7 +125,7 @@ if response.status_code == 200:
 
                 .entree-card {
                     flex: 1 1 30%; /* Allow cards to grow and shrink, with a base width of 30% */
-                    height: 200px; /* Set a fixed height for the cards */
+                    height: auto;   /* Set auto height for cards */
                     border-radius: 15px;
                     padding: 10px;
                     margin: 10px; /* Space around cards */
@@ -136,7 +137,14 @@ if response.status_code == 200:
                     align-items: center;
                     justify-content: center; /* Center content vertically */
                     text-align: center;       /* Center the text */
-                    font-size: 48px;         /* Increase font size for large emojis */
+                }
+
+                .food-emoji {
+                    font-size: 72px;  /* Large emoji size for food representation */
+                }
+
+                .nutritional-info {
+                    font-size: 16px;  /* Standard text size for nutrition info */
                 }
 
                 @media (max-width: 600px) {
@@ -156,11 +164,11 @@ if response.status_code == 200:
                 st.markdown(
                     f"<div class='entree-card'>"
                     f"<h3>{entree['rank']} - {entree['name']}</h3>"
-                    f"<p>{entree['emoji']}</p>"  # Display the emoji directly
-                    f"<p><b>💪 Protein:</b> {entree['protein']}g</p>"
-                    f"<p><b>🔥 Calories:</b> {entree['calories']}</p>"
-                    f"<p><b>🧂 Sodium:</b> {entree['sodium'] if entree['sodium'] is not None else 'N/A'} mg</p>"
-                    f"<p><b>⚖️ Protein-to-Calorie Ratio:</b> {entree['protein_calorie_ratio']:.4f}</p>"
+                    f"<p class='food-emoji'>{entree['emoji']}</p>"  # Display the emoji directly with bigger size
+                    f"<p class='nutritional-info'><b>💪 Protein:</b> {entree['protein']}g</p>"
+                    f"<p class='nutritional-info'><b>🔥 Calories:</b> {entree['calories']}</p>"
+                    f"<p class='nutritional-info'><b>🧂 Sodium:</b> {entree['sodium'] if entree['sodium'] is not None else 'N/A'} mg</p>"
+                    f"<p class='nutritional-info'><b>⚖️ Protein-to-Calorie Ratio:</b> {entree['protein_calorie_ratio']:.4f}</p>"
                     f"</div>",
                     unsafe_allow_html=True
                 )
