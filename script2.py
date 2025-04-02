@@ -141,6 +141,7 @@ if response.status_code == 200:
 
                 .food-emoji {
                     font-size: 72px;  /* Large emoji size for food representation */
+                    line-height: 1;   /* Prevent spacing issues due to line-height */
                 }
 
                 .nutritional-info {
