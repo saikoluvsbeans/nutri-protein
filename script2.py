@@ -63,7 +63,7 @@ if response.status_code == 200:
         st.markdown("<h1 style='text-align: center; color: white;'>🔥 Top 3 High-Protein Entrées</h1>", unsafe_allow_html=True)
         st.markdown(f"<h3 style='text-align: center; color: white;'>📅 Menu for {formatted_date}</h3>", unsafe_allow_html=True)
 
-        # Custom CSS for dark mode and layout
+        # Custom CSS for dark mode and filling the width
         st.markdown(
             """
             <style>
@@ -77,19 +77,19 @@ if response.status_code == 200:
 
             .card-container {
                 display: flex;
-                justify-content: center; /* Center the card layout */
+                justify-content: space-around; /* Evenly space cards */
                 flex-wrap: wrap; /* Allow wrapping of cards */
-                max-width: 100%; /* Set to full width for top items */
-                margin: 20px auto; /* Center the container and add margin */
+                width: 100%; /* Full width for container */
+                margin: 20px auto; /* Center the container */
                 padding: 20px; /* Add some padding to the container */
             }
 
             .entree-card {
-                width: 150px;  /* Set fixed width for square cards */
-                height: 150px; /* Set fixed height for square cards */
+                flex: 1 1 30%; /* Allow cards to grow and shrink, with a base width of 30% */
+                height: 200px; /* Set fixed height for the cards */
                 border-radius: 15px;
                 padding: 10px;
-                margin: 10px;
+                margin: 10px; /* Space around cards */
                 background-color: #1f1f1f; /* Dark card background */
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
                 color: #ffffff; /* Light text color */
@@ -111,6 +111,13 @@ if response.status_code == 200:
                 width: 100%;
                 height: 100%; /* Fill the card height */
                 object-fit: cover; /* Maintain aspect ratio */
+            }
+
+            @media (max-width: 600px) {
+                .entree-card {
+                    flex: 1 1 100%; /* Full width on mobile */
+                    height: auto; /* Allow auto height on mobile */
+                }
             }
             </style>
             """,
