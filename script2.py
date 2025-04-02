@@ -139,21 +139,10 @@ if response.status_code == 200:
                     text-align: center;       /* Center the text */
                 }
 
-                .food-emoji {
-                    font-size: 72px;  /* Large emoji size for food representation */
-                    line-height: 1;   /* Prevent spacing issues due to line-height */
-                }
-
                 .nutritional-info {
                     font-size: 16px;  /* Standard text size for nutrition info */
                 }
 
-                @media (max-width: 600px) {
-                    .entree-card {
-                        flex: 1 1 100%; /* Full width on mobile */
-                        height: auto; /* Allow auto height on mobile */
-                    }
-                }
                 </style>
                 """,
                 unsafe_allow_html=True
@@ -165,7 +154,7 @@ if response.status_code == 200:
                 st.markdown(
                     f"<div class='entree-card'>"
                     f"<h3>{entree['rank']} - {entree['name']}</h3>"
-                    f"<p class='food-emoji'>{entree['emoji']}</p>"  # Display the emoji directly with bigger size
+                    f"<p style='font-size: 72px; margin: 0;'>{entree['emoji']}</p>"  # Directly style the emoji
                     f"<p class='nutritional-info'><b>💪 Protein:</b> {entree['protein']}g</p>"
                     f"<p class='nutritional-info'><b>🔥 Calories:</b> {entree['calories']}</p>"
                     f"<p class='nutritional-info'><b>🧂 Sodium:</b> {entree['sodium'] if entree['sodium'] is not None else 'N/A'} mg</p>"
