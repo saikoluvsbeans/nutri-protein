@@ -12,7 +12,7 @@ api_url = f"https://leanderisd.api.nutrislice.com/menu/api/weeks/school/glenn-hi
 # Fetch the menu data from the Nutrislice API
 response = requests.get(api_url)
 
-# Function to return an emoji based on food name
+# Function to return an emoji based on food name (not used currently)
 def get_food_emoji(food_name):
     food_name = food_name.lower()
     emoji_dict = {
@@ -40,7 +40,7 @@ if response.status_code == 200:
     unique_entrees = {}
     archived_entrees_dict = {}  # Use a dictionary to prevent duplicates
 
-    # Iterate through each day's menu to build the food item list
+    # Iterate through each day's menu to build the food item list for the current date
     for day in menu_data.get("days", []):
         for item in day.get("menu_items", []):
             food = item.get("food")
