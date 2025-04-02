@@ -12,28 +12,6 @@ api_url = f"https://leanderisd.api.nutrislice.com/menu/api/weeks/school/glenn-hi
 # Fetch the menu data from the Nutrislice API
 response = requests.get(api_url)
 
-# Function to return an emoji based on food name (not used currently)
-def get_food_emoji(food_name):
-    food_name = food_name.lower()
-    emoji_dict = {
-        "chicken": "🍗",
-        "beef": "🥩",
-        "steak": "🥩",
-        "fish": "🐟",
-        "salmon": "🐟",
-        "pasta": "🍝",
-        "burger": "🍔",
-        "pizza": "🍕",
-        "sandwich": "🥪",
-        "salad": "🥗",
-        "nugget": "🍗",
-        "panini": "🥪"
-    }
-    for key in emoji_dict.keys():
-        if key in food_name:
-            return emoji_dict[key]
-    return "🍽️"
-
 # Check if the request was successful
 if response.status_code == 200:
     menu_data = response.json()
@@ -127,9 +105,8 @@ if response.status_code == 200:
             }
 
             .entree-card {
-                width: 100%;  /* Full width for the cards */
-                max-width: 300px; /* Set max width */
-                height: fit-content; /* Adjust height based on content */
+                width: 150px;  /* Set fixed width for square cards */
+                height: 150px; /* Set fixed height for square cards */
                 border-radius: 15px;
                 padding: 10px;
                 margin: 10px;
@@ -152,14 +129,16 @@ if response.status_code == 200:
             img {
                 border-radius: 10px;
                 width: 100%;
-                height: 100px; /* Fixed height for square images */
-                object-fit: cover; /* Ensure images are cropped to maintain square shape */
+                height: 100%; /* Fill the card height */
+                object-fit: cover; /* Maintain aspect ratio */
+                max-height: 100px; /* Ensure image is square */
             }
 
             /* Responsive styles */
             @media (max-width: 600px) {
                 .entree-card {
                     width: 100%; /* Full width on mobile */
+                    height: auto; /* Allow auto height on mobile */
                 }
             }
 
