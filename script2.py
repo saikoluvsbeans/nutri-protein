@@ -73,6 +73,9 @@ if response.status_code == 200:
             # Use an emoji if no image is found
             if not image_url:
                 image_url = get_food_emoji(name)  # Get emoji for the food item
+            else:
+                # When an image URL exists, do not replace it so it can be displayed
+                image_url = f"<img src='{image_url}' alt='{name} Image' style='width: 100%; height: auto;' />"
 
             # Ensure valid nutritional values before adding to unique_entrees
             if calories is not None and calories > 0 and protein is not None and protein > 0:
@@ -82,7 +85,7 @@ if response.status_code == 200:
                     "protein": protein,
                     "sodium": sodium,
                     "protein_calorie_ratio": protein / calories,
-                    "image_url": image_url  # Assign (valid or emoji) image URL
+                    "image_url": image_url  # Assign (valid image URL or emoji)
                 }
 
     # Sort unique entrees by protein-to-calorie ratio and create rank
@@ -143,8 +146,7 @@ if response.status_code == 200:
                 img {
                     border-radius: 10px;
                     width: 100%;
-                    height: 100%; /* Fill the card height */
-                    object-fit: cover; /* Maintain aspect ratio */
+                    height: auto; /* Maintain aspect ratio for images */
                 }
 
                 @media (max-width: 600px) {
@@ -164,7 +166,7 @@ if response.status_code == 200:
                 st.markdown(
                     f"<div class='entree-card'>"
                     f"<h3>{entree['rank']} - {entree['name']}</h3>"
-                    f"<p style='font-size: 50px;'>{entree['image_url']}</p>"  # Display emoji
+                    f"{entree['image_url']}"  # Render the image URL or emoji directly
                     f"<p><b>💪 Protein:</b> {entree['protein']}g</p>"
                     f"<p><b>🔥 Calories:</b> {entree['calories']}</p>"
                     f"<p><b>🧂 Sodium:</b> {entree['sodium'] if entree['sodium'] is not None else 'N/A'} mg</p>"
