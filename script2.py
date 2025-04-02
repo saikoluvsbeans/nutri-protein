@@ -40,7 +40,7 @@ if response.status_code == 200:
     unique_entrees = {}
     archived_entrees = []
 
-    # Iterate through each day's menu
+    # Iterate through each day's menu to build the food item list
     for day in menu_data.get("days", []):
         for item in day.get("menu_items", []):
             food = item.get("food")
@@ -104,7 +104,7 @@ if response.status_code == 200:
         st.markdown("<h1 style='text-align: center; color: white;'>🔥 Top 3 High-Protein Entrées 🍽️</h1>", unsafe_allow_html=True)
         st.markdown(f"<h3 style='text-align: center; color: white;'>📅 Menu for {formatted_date}</h3>", unsafe_allow_html=True)
 
-        # Custom CSS for dark mode and mobile-responsive layout
+        # Custom CSS for dark mode and full width top 3 layout
         st.markdown(
             """
             <style>
@@ -120,14 +120,14 @@ if response.status_code == 200:
                 display: flex;
                 justify-content: center; /* Center the card layout */
                 flex-wrap: wrap; /* Allow wrapping of cards */
-                max-width: 800px; /* Set a maximum width for better appearance */
+                max-width: 100%; /* Set to full width for top items */
                 margin: 20px auto; /* Center the container and add margin */
                 padding: 20px; /* Add some padding to the container */
             }
 
             .entree-card {
-                width: 90%;  /* Full width for small devices */
-                max-width: 200px; /* Max width for larger devices */
+                width: 100%;  /* Full width for the cards */
+                max-width: 300px; /* Set max width */
                 height: fit-content; /* Adjust height based on content */
                 border-radius: 15px;
                 padding: 10px;
@@ -171,7 +171,7 @@ if response.status_code == 200:
 
             .archive-container {
                 display: grid;
-                grid-template-columns: repeat(2, 1fr); /* Two-column grid */
+                grid-template-columns: repeat(2, 1fr); /* Two-column grid layout */
                 gap: 10px; /* Space between grid items */
                 margin: 20px; /* Space around grid */
             }
