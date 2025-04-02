@@ -167,8 +167,10 @@ if response_lunch.status_code == 200:
 
         # Dynamic content for Top 3 Breakfast Rankings
         elif menu_option == "Top 3 Breakfast Rankings":
+            # Use the same date logic for breakfast API
+            breakfast_api_url = f"https://leanderisd.api.nutrislice.com/menu/api/weeks/school/glenn-high/menu-type/breakfast/{current_date}/"
+
             # Fetch the breakfast menu data from the Nutrislice API
-            breakfast_api_url = "https://leanderisd.api.nutrislice.com/menu/api/weeks/school/glenn-high/menu-type/breakfast/2025/04/01/"
             response_breakfast = requests.get(breakfast_api_url)
 
             # Check if the request was successful for breakfast menu
@@ -177,8 +179,8 @@ if response_lunch.status_code == 200:
                 unique_breakfasts = {}
 
                 # Iterate through the breakfast menu to build the food item list
-                for breakfast_item in breakfast_data.get("days", []):
-                    for item in breakfast_item.get("menu_items", []):
+                for day in breakfast_data.get("days", []):
+                    for item in day.get("menu_items", []):
                         food = item.get("food")
                         if not food:
                             continue
