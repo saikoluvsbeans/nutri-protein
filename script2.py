@@ -131,7 +131,6 @@ if response.status_code == 200:
                 width: 100%;
                 height: 100%; /* Fill the card height */
                 object-fit: cover; /* Maintain aspect ratio */
-                max-height: 100px; /* Ensure image is square */
             }
 
             /* Responsive styles */
@@ -165,7 +164,7 @@ if response.status_code == 200:
         for entree in sorted_entrees[:3]:  # Displaying only top 3 for the main section
             st.markdown(
                 f"<div class='entree-card'>"
-                f"<h3>{entree['rank']} - {entree['name']}</h3>"  # Removed emoji
+                f"<h3>{entree['rank']} - {entree['name']}</h3>"
                 f"<img src='{entree['image_url']}' alt='{entree['name']} Image'>"
                 f"<p><b>💪 Protein:</b> {entree['protein']}g</p>"
                 f"<p><b>🔥 Calories:</b> {entree['calories']}</p>"
