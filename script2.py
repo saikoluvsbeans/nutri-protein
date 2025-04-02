@@ -19,6 +19,9 @@ def fetch_stock_image(query):
             data = response.json()
             if data['photos']:
                 return data['photos'][0]['src']['regular']  # Get the regular size image URL
+            else:
+                st.warning(f"No images found for query: {query}. Using default image.")
+                return DEFAULT_IMAGE
     except Exception as e:
         print(f"Error fetching image from Pexels: {e}")
     return DEFAULT_IMAGE  # Return default image if an error occurs
@@ -65,9 +68,11 @@ if response.status_code == 200:
             sodium = nutrients.get("mg_sodium")  # Added sodium field
             image_url = food.get("image_url")  # Get the image URL
 
-            # Use a stock image from Pexels if there's no image
+            # If no image is found, get a stock image
             if not image_url:
-                image_url = fetch_stock_image(name)  # Fetch stock image based on food name
+                # Use a descriptive query for fetching images
+                image_query = name + " stock photo"  # Modify query for better chances
+                image_url = fetch_stock_image(image_query)  # Fetch stock image based on food name
 
             # Ensure valid nutritional values before adding to unique_entrees
             if calories is not None and calories > 0 and protein is not None and protein > 0:
