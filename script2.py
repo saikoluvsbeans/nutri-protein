@@ -68,14 +68,9 @@ if response.status_code == 200:
             calories = nutrients.get("calories")
             protein = nutrients.get("g_protein")
             sodium = nutrients.get("mg_sodium")  # Added sodium field
-            image_url = food.get("image_url")  # Get the image URL
 
-            # Use an emoji if no image is found
-            if not image_url:
-                image_url = get_food_emoji(name)  # Get emoji for the food item
-            else:
-                # When an image URL exists, do not replace it so it can be displayed
-                image_url = f"<img src='{image_url}' alt='{name} Image' style='width: 100%; height: auto;' />"
+            # Use an emoji instead of an image
+            emoji = get_food_emoji(name)  # Get emoji for the food item
 
             # Ensure valid nutritional values before adding to unique_entrees
             if calories is not None and calories > 0 and protein is not None and protein > 0:
@@ -85,7 +80,7 @@ if response.status_code == 200:
                     "protein": protein,
                     "sodium": sodium,
                     "protein_calorie_ratio": protein / calories,
-                    "image_url": image_url  # Assign (valid image URL or emoji)
+                    "emoji": emoji  # Assign emoji directly
                 }
 
     # Sort unique entrees by protein-to-calorie ratio and create rank
@@ -129,7 +124,7 @@ if response.status_code == 200:
 
                 .entree-card {
                     flex: 1 1 30%; /* Allow cards to grow and shrink, with a base width of 30% */
-                    height: 200px; /* Set fixed height for the cards */
+                    height: 200px; /* Set a fixed height for the cards */
                     border-radius: 15px;
                     padding: 10px;
                     margin: 10px; /* Space around cards */
@@ -141,12 +136,7 @@ if response.status_code == 200:
                     align-items: center;
                     justify-content: center; /* Center content vertically */
                     text-align: center;       /* Center the text */
-                }
-
-                img {
-                    border-radius: 10px;
-                    width: 100%;
-                    height: auto; /* Maintain aspect ratio for images */
+                    font-size: 48px;         /* Increase font size for large emojis */
                 }
 
                 @media (max-width: 600px) {
@@ -166,7 +156,7 @@ if response.status_code == 200:
                 st.markdown(
                     f"<div class='entree-card'>"
                     f"<h3>{entree['rank']} - {entree['name']}</h3>"
-                    f"{entree['image_url']}"  # Render the image URL or emoji directly
+                    f"<p>{entree['emoji']}</p>"  # Display the emoji directly
                     f"<p><b>💪 Protein:</b> {entree['protein']}g</p>"
                     f"<p><b>🔥 Calories:</b> {entree['calories']}</p>"
                     f"<p><b>🧂 Sodium:</b> {entree['sodium'] if entree['sodium'] is not None else 'N/A'} mg</p>"
