@@ -17,6 +17,7 @@ FOOD_EMOJIS = {
     "spaghetti": "🍝",           # Emoji for spaghetti
     "fish": "🐟",                # Emoji for fish
     "chicken": "🍗",             # Emoji for chicken
+    "breakfast": "🍳",           # Emoji for breakfast
     "default": "🍽️"             # Default food emoji
 }
 
@@ -41,19 +42,19 @@ else:
 
 formatted_date = current_time.strftime("%B %d, %Y")
 
-# Define the API URL for the menu
-api_url = f"https://leanderisd.api.nutrislice.com/menu/api/weeks/school/glenn-high/menu-type/lunch/{current_date}/"
+# Define the API URL for the lunch menu
+api_url_lunch = f"https://leanderisd.api.nutrislice.com/menu/api/weeks/school/glenn-high/menu-type/lunch/{current_date}/"
 
-# Fetch the menu data from the Nutrislice API
-response = requests.get(api_url)
+# Fetch the lunch menu data from the Nutrislice API
+response_lunch = requests.get(api_url_lunch)
 
-# Check if the request was successful
-if response.status_code == 200:
-    menu_data = response.json()
+# Check if the request was successful for lunch menu
+if response_lunch.status_code == 200:
+    menu_data_lunch = response_lunch.json()
     unique_entrees = {}
 
-    # Iterate through each day's menu to build the food item list for the current date
-    for day in menu_data.get("days", []):
+    # Iterate through each day's menu to build the food item list for the lunch current date
+    for day in menu_data_lunch.get("days", []):
         for item in day.get("menu_items", []):
             food = item.get("food")
             if not food:
@@ -95,10 +96,10 @@ if response.status_code == 200:
     else:
         # Streamlit Sidebar Menu (only Top 3 Rankings option)
         st.sidebar.title("Menu")
-        menu_option = st.sidebar.selectbox("Navigate", options=["Top 3 Rankings"])
+        menu_option = st.sidebar.selectbox("Navigate", options=["Top 3 Lunch Rankings", "Top 3 Breakfast Rankings"])
 
-        # Dynamic content for Top 3 Rankings
-        if menu_option == "Top 3 Rankings":
+        # Dynamic content for Top 3 Lunch Rankings
+        if menu_option == "Top 3 Lunch Rankings":
             st.markdown("<h1 style='text-align: center; color: white;'>Top 3 High-Protein Entrées</h1>", unsafe_allow_html=True)
             st.markdown(f"<h3 style='text-align: center; color: white; margin-bottom: 10px;'>📅 Menu for {formatted_date}</h3>", unsafe_allow_html=True)
 
@@ -164,5 +165,72 @@ if response.status_code == 200:
                 )
             st.markdown("</div>", unsafe_allow_html=True)  # Close the card container
 
+        # Dynamic content for Top 3 Breakfast Rankings
+        elif menu_option == "Top 3 Breakfast Rankings":
+            # Fetch the breakfast menu data from the Nutrislice API
+            breakfast_api_url = "https://leanderisd.api.nutrislice.com/menu/api/weeks/school/glenn-high/menu-type/breakfast/2025/04/01/"
+            response_breakfast = requests.get(breakfast_api_url)
+
+            # Check if the request was successful for breakfast menu
+            if response_breakfast.status_code == 200:
+                breakfast_data = response_breakfast.json()
+                unique_breakfasts = {}
+
+                # Iterate through the breakfast menu to build the food item list
+                for breakfast_item in breakfast_data.get("days", []):
+                    for item in breakfast_item.get("menu_items", []):
+                        food = item.get("food")
+                        if not food:
+                            continue
+
+                        category = food.get("food_category", "").lower()
+                        if category != "breakfast":
+                            continue
+                        
+                        name = food.get("name", "Unknown Item")
+                        nutrients = food.get("rounded_nutrition_info", {})
+                        calories = nutrients.get("calories")
+                        sugars = nutrients.get("g_sugar")  # Added sugar field
+
+                        # Use an emoji for breakfast
+                        emoji = get_food_emoji(name)  # Get emoji for the food item
+
+                        # Ensure valid nutritional values before adding to unique_breakfasts
+                        if calories is not None and calories > 0 and sugars is not None and sugars >= 0:
+                            unique_breakfasts[name] = {
+                                "name": name,
+                                "calories": calories,
+                                "sugars": sugars,
+                                "emoji": emoji  # Assign emoji directly
+                            }
+
+                # Sort unique breakfasts by calories first, and then by sugars
+                sorted_breakfasts = sorted(unique_breakfasts.values(), key=lambda x: (x["calories"], x["sugars"]))
+                for index, breakfast in enumerate(sorted_breakfasts):
+                    breakfast["rank"] = index + 1  # Assign rank
+
+                # Make sure we filter for actual available menu items
+                if not sorted_breakfasts:
+                    st.error("❌ No available breakfast items for the specified date.")
+                else:
+                    # Container for the top breakfasts
+                    st.markdown("<h1 style='text-align: center; color: white;'>Top 3 Low-Sugar Breakfasts</h1>", unsafe_allow_html=True)
+                    st.markdown(f"<h3 style='text-align: center; color: white; margin-bottom: 10px;'>📅 Breakfast Menu</h3>", unsafe_allow_html=True)
+
+                    st.markdown("<div class='card-container'>", unsafe_allow_html=True)
+                    for breakfast in sorted_breakfasts[:3]:  # Display the top 3
+                        st.markdown(
+                            f"<div class='entree-card'>"
+                            f"<h3>{breakfast['rank']} - {breakfast['name']}</h3>"
+                            f"<p style='font-size: 72px; margin: 0;'>{breakfast['emoji']}</p>"  # Directly style the emoji
+                            f"<p class='nutritional-info'><b>🔥 Calories:</b> {breakfast['calories']}</p>"
+                            f"<p class='nutritional-info'><b>🍬 Sugars:</b> {breakfast['sugars']}g</p>"
+                            f"</div>",
+                            unsafe_allow_html=True
+                        )
+                    st.markdown("</div>", unsafe_allow_html=True)  # Close the card container
+            else:
+                st.error("❌ Error fetching data from the breakfast API.")
+
 else:
-    st.error("❌ Error fetching data from the API.")
+    st.error("❌ Error fetching data from the lunch API.")
