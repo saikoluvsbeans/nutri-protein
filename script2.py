@@ -46,13 +46,13 @@ if response.status_code == 200:
             calories = nutrients.get("calories")
             protein = nutrients.get("g_protein")
             sodium = nutrients.get("mg_sodium")  # Added sodium field
-            image_url = food.get("image_url", DEFAULT_IMAGE)  # Use a stock image if none provided
+            image_url = food.get("image_url")  # Get the image URL
 
-            # Use the default image if it's null or invalid
+            # Use the default image if it's null, missing, or invalid (e.g., empty string)
             if not image_url:
                 image_url = DEFAULT_IMAGE
 
-            # Ensure valid nutritional values
+            # Ensure valid nutritional values before adding to unique_entrees
             if calories is not None and calories > 0 and protein is not None and protein > 0:
                 unique_entrees[name] = {
                     "name": name,
@@ -60,7 +60,7 @@ if response.status_code == 200:
                     "protein": protein,
                     "sodium": sodium,
                     "protein_calorie_ratio": protein / calories,
-                    "image_url": image_url
+                    "image_url": image_url  # Assign (valid or default) image URL
                 }
 
     # Sort unique entrees by protein-to-calorie ratio and create rank
