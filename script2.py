@@ -100,7 +100,7 @@ if response.status_code == 200:
         # Dynamic content for Top 3 Rankings
         if menu_option == "Top 3 Rankings":
             st.markdown("<h1 style='text-align: center; color: white;'>Top 3 High-Protein Entrées</h1>", unsafe_allow_html=True)
-            st.markdown(f"<h3 style='text-align: center; color: white; margin-bottom: 10px;'>📅 Menu for {formatted_date}</h3>", unsafe_allow_html=True)
+            st.markdown(f"<h3 style='text-align: center; color: white; margin-bottom: 1px;'>📅 Menu for {formatted_date}</h3>", unsafe_allow_html=True)
 
             # Custom CSS for dark mode and layout adjustments
             st.markdown(
