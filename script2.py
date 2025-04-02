@@ -38,7 +38,7 @@ def get_food_emoji(food_name):
 if response.status_code == 200:
     menu_data = response.json()
     unique_entrees = {}
-    archived_entrees = []
+    archived_entrees_dict = {}  # Use a dictionary to prevent duplicates
 
     # Iterate through each day's menu to build the food item list
     for day in menu_data.get("days", []):
@@ -71,21 +71,25 @@ if response.status_code == 200:
                     "protein_calorie_ratio": protein / calories,
                     "image_url": image_url
                 }
-                archived_entrees.append({
+                # Store unique archived entrees in a dictionary to ensure no duplicates
+                archived_entrees_dict[name] = {
                     "name": name,
                     "calories": calories,
                     "protein": protein,
                     "sodium": sodium,
                     "image_url": image_url
-                })
+                }
             elif image_url:  # If only an image exists, archive the item
-                archived_entrees.append({
+                archived_entrees_dict[name] = {
                     "name": name,
                     "calories": calories,
                     "protein": protein,
                     "sodium": sodium,
                     "image_url": image_url
-                })
+                }
+
+    # Convert archived items back to a list
+    archived_entrees = list(archived_entrees_dict.values())
 
     # Sort unique entrees by protein-to-calorie ratio and create rank
     sorted_entrees = sorted(unique_entrees.values(), key=lambda x: x["protein_calorie_ratio"], reverse=True)
