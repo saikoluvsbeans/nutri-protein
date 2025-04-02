@@ -12,7 +12,7 @@ api_url = f"https://leanderisd.api.nutrislice.com/menu/api/weeks/school/glenn-hi
 # Fetch the menu data from the Nutrislice API
 response = requests.get(api_url)
 
-# Function to assign appropriate emoji based on food name
+# Function to return an emoji based on food name
 def get_food_emoji(food_name):
     food_name = food_name.lower()
     emoji_dict = {
@@ -69,16 +69,14 @@ if response.status_code == 200:
                     "protein": protein,
                     "sodium": sodium,
                     "protein_calorie_ratio": protein / calories,
-                    "image_url": image_url,
-                    "emoji": get_food_emoji(name)
+                    "image_url": image_url
                 }
                 archived_entrees.append({
                     "name": name,
                     "calories": calories,
                     "protein": protein,
                     "sodium": sodium,
-                    "image_url": image_url,
-                    "emoji": get_food_emoji(name)
+                    "image_url": image_url
                 })
             elif image_url:  # If only an image exists, archive the item
                 archived_entrees.append({
@@ -86,8 +84,7 @@ if response.status_code == 200:
                     "calories": calories,
                     "protein": protein,
                     "sodium": sodium,
-                    "image_url": image_url,
-                    "emoji": get_food_emoji(name)
+                    "image_url": image_url
                 })
 
     # Sort unique entrees by protein-to-calorie ratio and create rank
@@ -101,7 +98,7 @@ if response.status_code == 200:
 
     # Dynamic content based on the selected menu option
     if menu_option == "Top 3 Rankings":
-        st.markdown("<h1 style='text-align: center; color: white;'>🔥 Top 3 High-Protein Entrées 🍽️</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: white;'>🔥 Top 3 High-Protein Entrées</h1>", unsafe_allow_html=True)
         st.markdown(f"<h3 style='text-align: center; color: white;'>📅 Menu for {formatted_date}</h3>", unsafe_allow_html=True)
 
         # Custom CSS for dark mode and full width top 3 layout
@@ -185,7 +182,7 @@ if response.status_code == 200:
         for entree in sorted_entrees[:3]:  # Displaying only top 3 for the main section
             st.markdown(
                 f"<div class='entree-card'>"
-                f"<h3>{entree['rank']} - {entree['name']} {entree['emoji']}</h3>"
+                f"<h3>{entree['rank']} - {entree['name']}</h3>"  # Removed emoji
                 f"<img src='{entree['image_url']}' alt='{entree['name']} Image'>"
                 f"<p><b>💪 Protein:</b> {entree['protein']}g</p>"
                 f"<p><b>🔥 Calories:</b> {entree['calories']}</p>"
@@ -202,7 +199,7 @@ if response.status_code == 200:
         for archived in archived_entrees:
             st.markdown(
                 f"<div class='entree-card'>"
-                f"<h3>{archived['name']} {archived['emoji']}</h3>"
+                f"<h3>{archived['name']}</h3>"  # Removed emoji
                 f"<img src='{archived['image_url']}' alt='{archived['name']}'>"
                 f"<p><b>💪 Protein:</b> {archived['protein'] if archived['protein'] is not None else 'N/A'}g</p>"
                 f"<p><b>🔥 Calories:</b> {archived['calories'] if archived['calories'] is not None else 'N/A'}</p>"
@@ -225,7 +222,7 @@ if response.status_code == 200:
                 for found_entree in found_entrees:
                     st.markdown(
                         f"<div class='entree-card'>"
-                        f"<h3>{found_entree['rank']} - {found_entree['name']} {found_entree['emoji']}</h3>"
+                        f"<h3>{found_entree['rank']} - {found_entree['name']}</h3>"  # Removed emoji
                         f"<img src='{found_entree['image_url']}' alt='{found_entree['name']}'>"
                         f"<p><b>💪 Protein:</b> {found_entree['protein']}g</p>"
                         f"<p><b>🔥 Calories:</b> {found_entree['calories']}</p>"
