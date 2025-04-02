@@ -1,10 +1,16 @@
 import requests
 import streamlit as st
 from datetime import datetime
+import pytz  # Make sure to install pytz
 
-# Get today's date in the required format
-current_date = datetime.today().strftime("%Y/%m/%d")
-formatted_date = datetime.today().strftime("%B %d, %Y")
+# Specify a default image URL to use when an image is missing 
+DEFAULT_IMAGE = "https://via.placeholder.com/150"  # You can customize this URL as needed
+
+# Get today's date and time in Austin, Texas
+austin_tz = pytz.timezone('America/Chicago')  # Austin is in Central Time Zone
+current_time = datetime.now(austin_tz)
+current_date = current_time.strftime("%Y/%m/%d")
+formatted_date = current_time.strftime("%B %d, %Y")
 
 # Define the API URL
 api_url = f"https://leanderisd.api.nutrislice.com/menu/api/weeks/school/glenn-high/menu-type/lunch/{current_date}/"
@@ -29,17 +35,19 @@ if response.status_code == 200:
                 continue
 
             name = food.get("name", "Unknown Item")
-            if "enchilada" in name.lower():  # Skip enchiladas due to too many nulls
-                continue
 
             nutrients = food.get("rounded_nutrition_info", {})
             calories = nutrients.get("calories")
             protein = nutrients.get("g_protein")
             sodium = nutrients.get("mg_sodium")  # Added sodium field
-            image_url = food.get("image_url")
+            image_url = food.get("image_url", DEFAULT_IMAGE)  # Use stock image if none provided
 
-            # Ensure valid image URL and nutritional values
-            if image_url and (calories is not None and calories > 0) and (protein is not None and protein > 0):
+            # Use the default image if it's null or invalid
+            if not image_url:
+                image_url = DEFAULT_IMAGE
+
+            # Ensure valid nutritional values
+            if calories is not None and calories > 0 and protein is not None and protein > 0:
                 unique_entrees[name] = {
                     "name": name,
                     "calories": calories,
@@ -60,10 +68,10 @@ if response.status_code == 200:
 
     # Dynamic content for Top 3 Rankings
     if menu_option == "Top 3 Rankings":
-        st.markdown("<h1 style='text-align: center; color: white;'>🔥 Top 3 High-Protein Entrées</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: white;'>Top 3 High-Protein Entrées</h1>", unsafe_allow_html=True)
         st.markdown(f"<h3 style='text-align: center; color: white;'>📅 Menu for {formatted_date}</h3>", unsafe_allow_html=True)
 
-        # Custom CSS for dark mode and filling the width
+        # Custom CSS for dark mode and layout adjustments
         st.markdown(
             """
             <style>
@@ -80,7 +88,7 @@ if response.status_code == 200:
                 justify-content: space-around; /* Evenly space cards */
                 flex-wrap: wrap; /* Allow wrapping of cards */
                 width: 100%; /* Full width for container */
-                margin: 20px auto; /* Center the container */
+                margin: 20px 0; /* Center the container with reduced top margin */
                 padding: 20px; /* Add some padding to the container */
             }
 
@@ -98,12 +106,6 @@ if response.status_code == 200:
                 align-items: center;
                 justify-content: center; /* Center content vertically */
                 text-align: center;       /* Center the text */
-                transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition */
-            }
-
-            .entree-card:hover {
-                transform: scale(1.05); /* Scale effect on hover */
-                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7); /* Enhanced shadow on hover */
             }
 
             img {
